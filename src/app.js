@@ -38,6 +38,9 @@ const limiter = rateLimit({
 app.get("/", (req, res) => {
   res.send("Welcome to EduFlow API Home");
 });
+app.get("/test", (req, res) => {
+  res.send("Welcome to EduFlow API test");
+});
 app.use("/api/", limiter);
 
 // Body parsing
