@@ -46,6 +46,9 @@ app.get("/users", async (req, res) => {
   const users = await User.find().lean();
   res.send(users);
 });
+app.mongo("/users", async (req, res) => {
+  res.send(process.env.MONGODB_URI);
+});
 app.use("/api/", limiter);
 
 // Body parsing
