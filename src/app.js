@@ -27,8 +27,8 @@ app.use(
 );
 
 // Increase limit to accommodate base64 image strings
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -42,9 +42,13 @@ app.get("/", (req, res) => {
 app.get("/test", (req, res) => {
   res.send("Welcome to EduFlow API test");
 });
-app.get("/users", async (req, res) => {
-  const users = await User.find().lean();
-  res.send(users);
+app.get("/users", async (req, res, next) => {
+  try {
+    const users = await User.find().lean();
+    res.send(users);
+  } catch (error) {
+    next(error);
+  }
 });
 app.get("/mongo", async (req, res) => {
   res.send(process.env.MONGODB_URI);
