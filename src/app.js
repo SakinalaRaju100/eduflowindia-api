@@ -29,7 +29,7 @@ app.use(
 
 // Increase limit to accommodate base64 image strings
 app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -43,9 +43,20 @@ app.get("/", (req, res) => {
 app.get("/test", (req, res) => {
   res.send("Welcome to EduFlow API test");
 });
-app.get("/users", async (req, res, next) => {
+
+// Global Database Connection Middleware for Serverless (Vercel)
+// Ensures the database is connected before processing any subsequent routes
+app.use(async (req, res, next) => {
   try {
     await connectDB();
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/users", async (req, res, next) => {
+  try {
     const users = await User.find().lean();
     res.send(users);
   } catch (error) {
