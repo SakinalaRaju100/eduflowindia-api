@@ -8,6 +8,7 @@ const rateLimit = require("express-rate-limit");
 const routes = require("./routes");
 const { errorHandler, notFound } = require("./middleware/errorMiddleware");
 const User = require("./models/User");
+const connectDB = require("./config/database");
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.get("/test", (req, res) => {
 });
 app.get("/users", async (req, res, next) => {
   try {
+    await connectDB();
     const users = await User.find().lean();
     res.send(users);
   } catch (error) {
