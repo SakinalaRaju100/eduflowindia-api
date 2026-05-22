@@ -1,0 +1,11 @@
+const express = require('express');
+const r = express.Router();
+const { getAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement, markAnnouncementRead } = require('../controllers/miscController');
+const { protect, authorize } = require('../middleware/authMiddleware');
+r.use(protect);
+r.get('/', getAnnouncements);
+r.post('/', authorize('principal', 'teacher'), createAnnouncement);
+r.put('/:id', authorize('principal', 'teacher'), updateAnnouncement);
+r.delete('/:id', authorize('principal', 'teacher'), deleteAnnouncement);
+r.patch('/:id/read', markAnnouncementRead);
+module.exports = r;

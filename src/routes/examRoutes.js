@@ -1,0 +1,13 @@
+const express = require('express');
+const r = express.Router();
+const ctrl = require('../controllers/examController');
+const { protect, authorize } = require('../middleware/authMiddleware');
+r.use(protect);
+r.get('/', ctrl.getExams);
+r.post('/', authorize('principal', 'teacher'), ctrl.createExam);
+r.put('/:id', authorize('principal', 'teacher'), ctrl.updateExam);
+r.delete('/:id', authorize('principal', 'teacher'), ctrl.deleteExam);
+r.get('/results/:studentId', ctrl.getStudentResults);
+r.get('/:id/results', ctrl.getExamResults);
+r.post('/:id/results', authorize('principal', 'teacher'), ctrl.enterResults);
+module.exports = r;

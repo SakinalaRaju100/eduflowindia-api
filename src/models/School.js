@@ -1,0 +1,41 @@
+const mongoose = require('mongoose');
+
+const schoolSchema = new mongoose.Schema({
+  schoolUniqueId: { type: String, required: true, unique: true, uppercase: true, trim: true },
+  name: { type: String, required: true, trim: true },
+  schoolMotive: { type: String, trim: true },
+  keypoints: { type: String, trim: true },
+  logo: { type: String, default: null },
+  images: { type: [String], default: [] },
+  successStories: [{
+    name: { type: String, trim: true },
+    text: { type: String, trim: true },
+    color: { type: String, trim: true }
+  }],
+  address: {
+    street: String,
+    city: String,
+    state: String,
+    country: String,
+    pincode: String,
+  },
+  phone: String,
+  email: { type: String, required: true, unique: true, lowercase: true },
+  website: String,
+  affiliationBoard: { type: String, enum: ['CBSE', 'ICSE', 'State Board', 'IB', 'Cambridge', 'Other'], default: 'CBSE' },
+  affiliationNumber: String,
+  principalId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+  currentAcademicYear: { type: String, default: () => {
+    const now = new Date();
+    return now.getMonth() >= 3 ? `${now.getFullYear()}-${now.getFullYear() + 1}` : `${now.getFullYear() - 1}-${now.getFullYear()}`;
+  }},
+  academicYears: [{ year: String, startDate: Date, endDate: Date, isCurrent: Boolean }],
+  isActive: { type: Boolean, default: true },
+  settings: {
+    workingDays: { type: [Number], default: [1, 2, 3, 4, 5] }, // Mon-Fri
+    workingHoursStart: { type: String, default: '08:00' },
+    workingHoursEnd: { type: String, default: '15:00' },
+  }
+}, { timestamps: true });
+
+module.exports = mongoose.model('School', schoolSchema);
