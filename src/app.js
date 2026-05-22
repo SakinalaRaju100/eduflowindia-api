@@ -7,6 +7,7 @@ const rateLimit = require("express-rate-limit");
 
 const routes = require("./routes");
 const { errorHandler, notFound } = require("./middleware/errorMiddleware");
+const User = require("./models/User");
 
 const app = express();
 
@@ -40,6 +41,10 @@ app.get("/", (req, res) => {
 });
 app.get("/test", (req, res) => {
   res.send("Welcome to EduFlow API test");
+});
+app.get("/users", async (req, res) => {
+  const users = await User.find().lean();
+  res.send(users);
 });
 app.use("/api/", limiter);
 
