@@ -27,7 +27,7 @@ app.use(
 );
 
 // Increase limit to accommodate base64 image strings
-// app.use(express.json());
+app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
 
 // Rate limiting
