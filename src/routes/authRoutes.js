@@ -1,22 +1,35 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { login, refresh, logout, changePassword, forgotPassword, resetPassword, getMe, updatePreferences } = require('../controllers/authController');
-const { protect } = require('../middleware/authMiddleware');
-const authController = require('../controllers/authController');
+const {
+  login,
+  refresh,
+  logout,
+  changePassword,
+  forgotPassword,
+  resetPassword,
+  getMe,
+  saveFcmToken,
+  updatePreferences,
+} = require("../controllers/authController");
+const { protect } = require("../middleware/authMiddleware");
+const authController = require("../controllers/authController");
 
-router.post('/login', login);
-router.post('/refresh', refresh);
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password', resetPassword);
+router.post("/login", login);
+router.post("/refresh", refresh);
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password", resetPassword);
 // Add this new route for fetching public school info
-router.get('/schools/unique/:schoolUniqueId', authController.getSchoolByUniqueId);
-
+router.get(
+  "/schools/unique/:schoolUniqueId",
+  authController.getSchoolByUniqueId,
+);
 
 // Protected
 router.use(protect);
-router.post('/logout', logout);
-router.get('/me', getMe);
-router.post('/change-password', changePassword);
-router.patch('/preferences', updatePreferences);
+router.post("/logout", logout);
+router.get("/me", getMe);
+router.post("/fcm-token", saveFcmToken);
+router.post("/change-password", changePassword);
+router.patch("/preferences", updatePreferences);
 
 module.exports = router;
