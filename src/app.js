@@ -35,7 +35,7 @@ const limiter = rateLimit({
   message: "Too many requests",
 });
 app.get("/", (req, res) => {
-  res.send("Welcome to EduFlow API Home");
+  res.send("Welcome to EduFlow API");
 });
 app.get("/test", (req, res) => {
   res.send("Welcome to EduFlow API test");
