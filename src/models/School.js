@@ -10,6 +10,17 @@ const schoolSchema = new mongoose.Schema(
       trim: true,
     },
     name: { type: String, required: true, trim: true },
+    institutionType: {
+      type: String,
+      enum: ["School", "College"],
+      default: "School",
+    },
+    institutionSector: {
+      type: String,
+      enum: ["government", "private"],
+      default: "private",
+    },
+    aboutSchool: { type: String, trim: true },
     schoolMotive: { type: String, trim: true },
     keypoints: { type: String, trim: true },
     logo: { type: String, default: null },
@@ -19,6 +30,7 @@ const schoolSchema = new mongoose.Schema(
         name: { type: String, trim: true },
         text: { type: String, trim: true },
         color: { type: String, trim: true },
+        rating: { type: Number, default: 5, min: 1, max: 5 },
       },
     ],
     address: {
@@ -64,6 +76,13 @@ const schoolSchema = new mongoose.Schema(
       workingDays: { type: [Number], default: [1, 2, 3, 4, 5] }, // Mon-Fri
       workingHoursStart: { type: String, default: "08:00" },
       workingHoursEnd: { type: String, default: "15:00" },
+    },
+    paymentDetails: {
+      bankAccountNumber: String,
+      ifscCode: String,
+      upiNumber: String,
+      upiId: String,
+      upiQrCode: String,
     },
   },
   { timestamps: true },
