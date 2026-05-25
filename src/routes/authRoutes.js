@@ -20,7 +20,7 @@ router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
 // Add this new route for fetching public school info
 router.get(
-  "/schools/unique/:schoolUniqueId",
+  "/schools/unique/:institutionUniqueId",
   authController.getSchoolByUniqueId,
 );
 

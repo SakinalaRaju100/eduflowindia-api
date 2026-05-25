@@ -4,11 +4,11 @@ const { sendOTPEmail } = require("../utils/email");
 const crypto = require("crypto");
 const School = require("../models/School");
 
-// GET /api/auth/schools/unique/:schoolUniqueId
+// GET /api/auth/schools/unique/:institutionUniqueId
 exports.getSchoolByUniqueId = async (req, res) => {
   try {
     const school = await School.findOne({
-      schoolUniqueId: req.params.schoolUniqueId.toUpperCase(),
+      institutionUniqueId: req.params.institutionUniqueId.toUpperCase(),
     });
     if (!school)
       return res

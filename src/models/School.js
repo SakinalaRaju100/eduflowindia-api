@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const schoolSchema = new mongoose.Schema(
   {
-    schoolUniqueId: {
+    institutionUniqueId: {
       type: String,
       required: true,
       unique: true,
@@ -20,8 +20,8 @@ const schoolSchema = new mongoose.Schema(
       enum: ["government", "private"],
       default: "private",
     },
-    aboutSchool: { type: String, trim: true },
-    schoolMotive: { type: String, trim: true },
+    aboutInstitute: { type: String, trim: true },
+    institutionMotive: { type: String, trim: true },
     keypoints: { type: String, trim: true },
     logo: { type: String, default: null },
     images: { type: [String], default: [] },
