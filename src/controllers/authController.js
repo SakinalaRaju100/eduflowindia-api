@@ -164,6 +164,24 @@ exports.createPost = async (req, res) => {
   }
 };
 
+// PUT /api/auth/posts/:id
+exports.updatePost = async (req, res) => {
+  try {
+    if (req.user.role !== "principal") {
+      return res.status(403).json({ success: false, message: "Unauthorized" });
+    }
+    const institutionId = req.user.institution?._id || req.user.institution;
+    const post = await Post.findOneAndUpdate(
+      { _id: req.params.id, institution: institutionId },
+      { ...req.body },
+      { new: true },
+    );
+    res.json({ success: true, data: post });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 // DELETE /api/auth/posts/:id
 exports.deletePost = async (req, res) => {
   try {

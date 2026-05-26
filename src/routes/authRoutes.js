@@ -48,6 +48,7 @@ router.patch("/inquiries/:id/status", updateInquiryStatus);
 router.post("/jobs", authController.createJob);
 router.delete("/jobs/:id", authController.deleteJob);
 router.post("/posts", authController.createPost);
+router.put("/posts/:id", authController.updatePost);
 router.delete("/posts/:id", authController.deletePost);
 router.post("/posts/:id/like", authController.toggleLike);
 router.post("/posts/:id/comment", authController.addComment);
