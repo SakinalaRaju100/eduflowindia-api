@@ -3,7 +3,7 @@ require("dotenv").config({
 });
 const mongoose = require("mongoose");
 const User = require("../models/User");
-const School = require("../models/School");
+const Institution = require("../models/Institution");
 const Classroom = require("../models/Classroom");
 const StudentProfile = require("../models/StudentProfile");
 const TeacherProfile = require("../models/TeacherProfile");
@@ -18,7 +18,7 @@ const run = async () => {
   // Clear existing data
   await Promise.all([
     User.deleteMany({}),
-    School.deleteMany({}),
+    Institution.deleteMany({}),
     Classroom.deleteMany({}),
     StudentProfile.deleteMany({}),
     TeacherProfile.deleteMany({}),
@@ -39,10 +39,10 @@ const run = async () => {
   });
   console.log("✅ Superadmin created:", superadmin.email);
 
-  // ── Demo School ──────────────────────────────────────────────
-  const school = await School.create({
+  // ── Demo Institution ──────────────────────────────────────────────
+  const institution = await Institution.create({
     institutionUniqueId: "2024GREE",
-    name: "Greenwood International School",
+    name: "Greenwood International Institution",
     email: "admin@greenwood.edu",
     phone: "+91-9876543210",
     website: "www.greenwood.edu",
@@ -71,14 +71,14 @@ const run = async () => {
     email: "principal@greenwood.edu",
     password: "Principal@123",
     role: "principal",
-    school: school._id,
+    institution: institution._id,
     firstName: "Dr. Priya",
     lastName: "Sharma",
     phone: "+91-9876500001",
     isFirstLogin: false,
   });
-  school.principalId = principal._id;
-  await school.save();
+  institution.principalId = principal._id;
+  await institution.save();
   console.log("✅ Principal created:", principal.email);
 
   // ── Teachers ─────────────────────────────────────────────────
@@ -120,14 +120,14 @@ const run = async () => {
       email: td.email,
       password: "Teacher@1234",
       role: "teacher",
-      school: school._id,
+      institution: institution._id,
       firstName: td.firstName,
       lastName: td.lastName,
       isFirstLogin: false,
     });
     const tp = await TeacherProfile.create({
       userId: u._id,
-      school: school._id,
+      institution: institution._id,
       teacherId: `TCH-2024-00${i + 1}`,
       qualifications: [
         { degree: "M.Sc", institution: "Delhi University", year: 2010 },
@@ -182,7 +182,7 @@ const run = async () => {
   for (const cd of classroomDefs) {
     const cr = await Classroom.create({
       ...cd,
-      school: school._id,
+      institution: institution._id,
       academicYear: "2024-2025",
       capacity: 40,
       description: `Grade ${cd.grade} Section ${cd.section}`,
@@ -227,7 +227,7 @@ const run = async () => {
     email: "parent@greenwood.edu",
     password: "Parent@1234",
     role: "parent",
-    school: school._id,
+    institution: institution._id,
     firstName: "Suresh",
     lastName: "Gupta",
     isFirstLogin: false,
@@ -246,14 +246,14 @@ const run = async () => {
       email: `${fn.toLowerCase()}.${ln.toLowerCase()}@student.greenwood.edu`,
       password: "Student@1234",
       role: "student",
-      school: school._id,
+      institution: institution._id,
       firstName: fn,
       lastName: ln,
       isFirstLogin: false,
     });
     const sp = await StudentProfile.create({
       userId: u._id,
-      school: school._id,
+      institution: institution._id,
       classroom: classroom._id,
       rollNumber: String(i + 1).padStart(2, "0"),
       studentId: `STU-2024-${String(i + 1).padStart(4, "0")}`,
@@ -278,7 +278,7 @@ const run = async () => {
 
     // Create fee record
     await FeeRecord.create({
-      school: school._id,
+      institution: institution._id,
       student: u._id,
       classroom: classroom._id,
       academicYear: "2024-2025",
@@ -370,7 +370,7 @@ const run = async () => {
   for (const ev of events) {
     await CalendarEvent.create({
       ...ev,
-      school: school._id,
+      institution: institution._id,
       createdBy: principal._id,
       isPublic: true,
       targetRoles: ["all"],
@@ -381,7 +381,7 @@ const run = async () => {
   // ── Announcements ────────────────────────────────────────────
   await Announcement.create([
     {
-      school: school._id,
+      institution: institution._id,
       title: "Welcome to Academic Year 2024-25",
       content:
         "We are pleased to welcome all students and staff to the new academic year. Classes begin on April 5th.",
@@ -390,7 +390,7 @@ const run = async () => {
       priority: "important",
     },
     {
-      school: school._id,
+      institution: institution._id,
       title: "Mid-Term Exam Schedule Released",
       content:
         "Mid-term exams will be held from Sept 1-10. Time tables are now available in the portal.",
@@ -399,7 +399,7 @@ const run = async () => {
       priority: "important",
     },
     {
-      school: school._id,
+      institution: institution._id,
       title: "Staff Meeting - Friday 3PM",
       content:
         "Mandatory staff meeting this Friday at 3:00 PM in the conference hall.",
@@ -412,7 +412,7 @@ const run = async () => {
 
   // ── Sample Exam ──────────────────────────────────────────────
   await Exam.create({
-    school: school._id,
+    institution: institution._id,
     classroom: classrooms[0]._id,
     title: "Unit Test 1",
     type: "unit-test",

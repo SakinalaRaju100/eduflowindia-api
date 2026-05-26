@@ -1,19 +1,20 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
-const createTransporter = () => nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.EMAIL_PORT) || 587,
-  secure: false,
-  auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
-});
+const createTransporter = () =>
+  nodemailer.createTransport({
+    host: process.env.EMAIL_HOST || "smtp.gmail.com",
+    port: parseInt(process.env.EMAIL_PORT) || 587,
+    secure: false,
+    auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+  });
 
 exports.sendOTPEmail = async (to, name, otp) => {
   try {
     const transporter = createTransporter();
     await transporter.sendMail({
-      from: `"School Management System" <${process.env.EMAIL_FROM}>`,
+      from: `"Institution Management System" <${process.env.EMAIL_FROM}>`,
       to,
-      subject: 'Password Reset OTP',
+      subject: "Password Reset OTP",
       html: `
         <div style="font-family:Arial,sans-serif;max-width:500px;margin:auto;padding:30px;border:1px solid #e0e0e0;border-radius:8px">
           <h2 style="color:#1976d2">Password Reset Request</h2>
@@ -23,12 +24,12 @@ exports.sendOTPEmail = async (to, name, otp) => {
           <p>This OTP is valid for <strong>10 minutes</strong>.</p>
           <p>If you did not request this, please ignore this email.</p>
           <hr/>
-          <small style="color:#999">School Management System - Auto-generated email</small>
+          <small style="color:#999">Institution Management System - Auto-generated email</small>
         </div>
       `,
     });
   } catch (err) {
-    console.error('Email send failed:', err.message);
+    console.error("Email send failed:", err.message);
   }
 };
 
@@ -36,9 +37,9 @@ exports.sendWelcomeEmail = async (to, name, email, password, role) => {
   try {
     const transporter = createTransporter();
     await transporter.sendMail({
-      from: `"School Management System" <${process.env.EMAIL_FROM}>`,
+      from: `"Institution Management System" <${process.env.EMAIL_FROM}>`,
       to,
-      subject: 'Welcome to School Management System',
+      subject: "Welcome to Institution Management System",
       html: `
         <div style="font-family:Arial,sans-serif;max-width:500px;margin:auto;padding:30px;border:1px solid #e0e0e0;border-radius:8px">
           <h2 style="color:#1976d2">Welcome, ${name}!</h2>
@@ -51,6 +52,6 @@ exports.sendWelcomeEmail = async (to, name, email, password, role) => {
       `,
     });
   } catch (err) {
-    console.error('Welcome email failed:', err.message);
+    console.error("Welcome email failed:", err.message);
   }
 };

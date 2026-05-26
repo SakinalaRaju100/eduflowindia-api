@@ -18,10 +18,10 @@ router.post("/login", login);
 router.post("/refresh", refresh);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
-// Add this new route for fetching public school info
+// Add this new route for fetching public institution info
 router.get(
   "/schools/unique/:institutionUniqueId",
-  authController.getSchoolByUniqueId,
+  authController.getInstitutionByUniqueId,
 );
 
 // Protected

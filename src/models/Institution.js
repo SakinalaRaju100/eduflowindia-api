@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const schoolSchema = new mongoose.Schema(
+const institutionSchema = new mongoose.Schema(
   {
     institutionUniqueId: {
       type: String,
@@ -88,4 +88,4 @@ const schoolSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-module.exports = mongoose.model("School", schoolSchema);
+module.exports = mongoose.model("Institution", institutionSchema);

@@ -14,9 +14,9 @@ const userSchema = new mongoose.Schema(
     },
     password: { type: String, required: true, select: false },
     role: { type: String, enum: ROLES, required: true },
-    school: {
+    institution: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "School",
+      ref: "Institution",
       default: null,
     },
     firstName: { type: String, required: true, trim: true },

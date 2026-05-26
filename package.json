@@ -1,7 +1,7 @@
 {
   "name": "sms-backend",
   "version": "1.0.0",
-  "description": "School Management System Backend",
+  "description": "Institution Management System Backend",
   "main": "src/server.js",
   "type": "commonjs",
   "scripts": {

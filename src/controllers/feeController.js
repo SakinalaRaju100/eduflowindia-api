@@ -1,64 +1,106 @@
-const FeeRecord = require('../models/FeeRecord');
-const Classroom = require('../models/Classroom');
-const { v4: uuidv4 } = require('uuid');
+const FeeRecord = require("../models/FeeRecord");
+const Classroom = require("../models/Classroom");
+const { v4: uuidv4 } = require("uuid");
 
 exports.getFees = async (req, res) => {
   try {
-    const filter = { school: req.user.school };
+    const filter = { institution: req.user.institution };
     if (req.query.studentId) filter.student = req.query.studentId;
     if (req.query.classroomId) filter.classroom = req.query.classroomId;
     if (req.query.status) filter.status = req.query.status;
     const fees = await FeeRecord.find(filter)
-      .populate('student', 'firstName lastName photo')
-      .populate('classroom', 'name grade section')
-      .sort('-createdAt');
+      .populate("student", "firstName lastName photo")
+      .populate("classroom", "name grade section")
+      .sort("-createdAt");
     res.json({ success: true, data: fees });
-  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 };
 
 exports.createFeeRecord = async (req, res) => {
   try {
-    const { assignTo, classroom, student, feeType, totalAmount, academicYear, installments } = req.body;
-    
+    const {
+      assignTo,
+      classroom,
+      student,
+      feeType,
+      totalAmount,
+      academicYear,
+      installments,
+    } = req.body;
+
     let studentsToAssign = [];
-    if (assignTo === 'classroom') {
-      if (!classroom) return res.status(400).json({ success: false, message: 'Classroom is required' });
+    if (assignTo === "classroom") {
+      if (!classroom)
+        return res
+          .status(400)
+          .json({ success: false, message: "Classroom is required" });
       const cls = await Classroom.findById(classroom);
-      if (!cls) return res.status(404).json({ success: false, message: 'Classroom not found' });
+      if (!cls)
+        return res
+          .status(404)
+          .json({ success: false, message: "Classroom not found" });
       studentsToAssign = cls.students;
-    } else if (assignTo === 'student') {
-      if (!student) return res.status(400).json({ success: false, message: 'Student is required' });
+    } else if (assignTo === "student") {
+      if (!student)
+        return res
+          .status(400)
+          .json({ success: false, message: "Student is required" });
       studentsToAssign = [student];
     } else {
-      const fee = await FeeRecord.create({ ...req.body, school: req.user.school });
+      const fee = await FeeRecord.create({
+        ...req.body,
+        institution: req.user.institution,
+      });
       return res.status(201).json({ success: true, data: fee });
     }
 
-    const records = studentsToAssign.map(sid => ({
-      school: req.user.school,
+    const records = studentsToAssign.map((sid) => ({
+      institution: req.user.institution,
       student: sid,
       classroom: classroom,
-      academicYear: academicYear || '2024-2025',
+      academicYear: academicYear || "2024-2025",
       feeType,
       totalAmount,
       dueDate: installments?.[0]?.dueDate || null,
-      installments: installments?.map((inst, i) => ({ installmentNo: i + 1, amount: inst.amount, dueDate: inst.dueDate, isPaid: false })) || []
+      installments:
+        installments?.map((inst, i) => ({
+          installmentNo: i + 1,
+          amount: inst.amount,
+          dueDate: inst.dueDate,
+          isPaid: false,
+        })) || [],
     }));
 
     const created = await FeeRecord.insertMany(records);
     res.status(201).json({ success: true, data: created });
-  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 };
 
 exports.collectInstallment = async (req, res) => {
   try {
     const { installmentNo, paymentMode } = req.body;
-    const fee = await FeeRecord.findOne({ _id: req.params.id, school: req.user.school });
-    if (!fee) return res.status(404).json({ success: false, message: 'Fee record not found' });
+    const fee = await FeeRecord.findOne({
+      _id: req.params.id,
+      institution: req.user.institution,
+    });
+    if (!fee)
+      return res
+        .status(404)
+        .json({ success: false, message: "Fee record not found" });
 
-    const inst = fee.installments.find(i => i.installmentNo === installmentNo);
-    if (!inst) return res.status(404).json({ success: false, message: 'Installment not found' });
-    if (inst.isPaid) return res.status(400).json({ success: false, message: 'Already paid' });
+    const inst = fee.installments.find(
+      (i) => i.installmentNo === installmentNo,
+    );
+    if (!inst)
+      return res
+        .status(404)
+        .json({ success: false, message: "Installment not found" });
+    if (inst.isPaid)
+      return res.status(400).json({ success: false, message: "Already paid" });
 
     inst.isPaid = true;
     inst.paidDate = new Date();
@@ -67,24 +109,41 @@ exports.collectInstallment = async (req, res) => {
     inst.collectedBy = req.user._id;
 
     await fee.save();
-    res.json({ success: true, data: fee, message: 'Payment collected', receiptNo: inst.receiptNo });
-  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+    res.json({
+      success: true,
+      data: fee,
+      message: "Payment collected",
+      receiptNo: inst.receiptNo,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 };
 
 exports.getStudentFees = async (req, res) => {
   try {
-    const fees = await FeeRecord.find({ student: req.params.studentId, school: req.user.school });
+    const fees = await FeeRecord.find({
+      student: req.params.studentId,
+      institution: req.user.institution,
+    });
     const totalDue = fees.reduce((s, f) => s + (f.dueAmount || 0), 0);
     const totalPaid = fees.reduce((s, f) => s + (f.paidAmount || 0), 0);
     res.json({ success: true, data: { fees, totalDue, totalPaid } });
-  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 };
 
 exports.getDefaulters = async (req, res) => {
   try {
-    const fees = await FeeRecord.find({ school: req.user.school, status: { $in: ['overdue', 'unpaid'] } })
-      .populate('student', 'firstName lastName photo')
-      .populate('classroom', 'name grade section');
+    const fees = await FeeRecord.find({
+      institution: req.user.institution,
+      status: { $in: ["overdue", "unpaid"] },
+    })
+      .populate("student", "firstName lastName photo")
+      .populate("classroom", "name grade section");
     res.json({ success: true, data: fees });
-  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 };

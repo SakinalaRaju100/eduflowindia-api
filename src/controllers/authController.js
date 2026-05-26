@@ -2,19 +2,19 @@ const User = require("../models/User");
 const { generateTokenPair, verifyRefreshToken } = require("../utils/jwt");
 const { sendOTPEmail } = require("../utils/email");
 const crypto = require("crypto");
-const School = require("../models/School");
+const Institution = require("../models/Institution");
 
 // GET /api/auth/schools/unique/:institutionUniqueId
-exports.getSchoolByUniqueId = async (req, res) => {
+exports.getInstitutionByUniqueId = async (req, res) => {
   try {
-    const school = await School.findOne({
+    const institution = await Institution.findOne({
       institutionUniqueId: req.params.institutionUniqueId.toUpperCase(),
     });
-    if (!school)
+    if (!institution)
       return res
         .status(404)
-        .json({ success: false, message: "School not found" });
-    res.json({ success: true, data: school });
+        .json({ success: false, message: "Institution not found" });
+    res.json({ success: true, data: institution });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -33,7 +33,7 @@ exports.login = async (req, res) => {
       isActive: true,
     })
       .select("+password +refreshTokens")
-      .populate("school");
+      .populate("institution");
     if (!user || !(await user.comparePassword(password))) {
       return res
         .status(401)
@@ -66,7 +66,7 @@ exports.login = async (req, res) => {
           firstName: user.firstName,
           lastName: user.lastName,
           photo: user.photo,
-          school: user.school,
+          institution: user.institution,
           preferences: user.preferences,
           // user
         },
@@ -218,7 +218,7 @@ exports.getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id)
       .select("-refreshTokens")
-      .populate("school")
+      .populate("institution")
       .lean();
     res.json({ success: true, data: user });
   } catch (err) {
